@@ -1,21 +1,39 @@
 import math
 import random
 
-MIN_PRIME = 2 ** 31
-MAX_PRIME = 2 ** 32
+MIN_PRIME = 2 ** 63
+MAX_PRIME = 2 ** 64
+
+
+def miller_rabin_test(n, k):
+    if n == 2 or n == 3:
+        return True
+    if n % 2 == 0 or n < 2:
+        return False
+
+    r, d = 0, n - 1
+    while d % 2 == 0:
+        r += 1
+        d //= 2
+
+    for _ in range(k):
+        a = random.randint(2, n - 2)
+        x = pow(a, d, n)
+        if x == 1 or x == n - 1:
+            continue
+
+        for _ in range(r - 1):
+            x = pow(x, 2, n)
+            if x == n - 1:
+                break
+        else:
+            return False
+
+    return True
 
 
 def is_prime(n):
-    if n < 2 or n % 2 == 0:
-        return False
-    i = 3
-    while i * i <= n:
-        if n % i == 0:
-            return False
-
-        i += 2
-
-    return True
+    return miller_rabin_test(n, 50)
 
 
 def generate_prime_number():
